@@ -119,4 +119,7 @@ class AuthController extends BaseController
         return $this->sendError('Error, check the parameters.', [], 200);
     }
 
+    public function check(){
+        return $this->sendResponse([], 'The token is valid!');
+    }
 }

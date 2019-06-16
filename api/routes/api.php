@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 
 Route::prefix('page')->group(function(){
     Route::post('register', 'Api\Page\AuthController@register');
-    Route::post('update', 'Api\Page\AuthController@update');
     Route::post('login', 'Api\Page\AuthController@login');
+    
+    Route::middleware('auth:user')->group(function(){
+        Route::get('check', 'Api\Page\AuthController@check');
+        Route::post('update', 'Api\Page\AuthController@update');
+    });
 
     Route::post('send', 'Api\Page\ContactController@send');
 });
