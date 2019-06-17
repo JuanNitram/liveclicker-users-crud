@@ -61,11 +61,11 @@ class BaseController extends Controller
             $media_filename= pathinfo($media->getClientOriginalName(), PATHINFO_FILENAME);
 
             if($media_type == 'image'){
-                foreach($file_preferences['sizes'] as $key => $dimension){
-                    $resized_media = \Image::make($media)->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
-                    $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
-                    $model->attachMedia($m_resized_media, [$key]);
-                }
+                // foreach($file_preferences['sizes'] as $key => $dimension){
+                //     $resized_media = \Image::make($media)->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
+                //     $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
+                //     $model->attachMedia($m_resized_media, [$key]);
+                // }
     
                 foreach($file_preferences['sizes'] as $key => $dimension){
                     $resized_media = \Image::make($media);
@@ -87,19 +87,19 @@ class BaseController extends Controller
                         $font->valign('top');
                     })->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
 
-                    $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key . '-with-name')->upload();
-                    $model->attachMedia($m_resized_media, [$key . '-with-name']);
+                    $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
+                    $model->attachMedia($m_resized_media, [$key]);
                 }
             }
         } else {
             $media_filename = 'default';
 
-            foreach($file_preferences['sizes'] as $key => $dimension){
-                $media = \Image::make(resource_path('img/default.png'));
-                $resized_media = \Image::make($media)->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
-                $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
-                $model->attachMedia($m_resized_media, [$key]);
-            }
+            // foreach($file_preferences['sizes'] as $key => $dimension){
+            //     $media = \Image::make(resource_path('img/default.png'));
+            //     $resized_media = \Image::make($media)->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
+            //     $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
+            //     $model->attachMedia($m_resized_media, [$key]);
+            // }
 
             foreach($file_preferences['sizes'] as $key => $dimension){
                 $resized_media = \Image::make(resource_path('img/default.png'));
@@ -121,8 +121,8 @@ class BaseController extends Controller
                     $font->valign('top');
                 })->resize($dimension[0], $dimension[1])->encode('jpg', $file_preferences['quality']);
 
-                $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key . '-with-name')->upload();
-                $model->attachMedia($m_resized_media, [$key . '-with-name']);
+                $m_resized_media = MediaUploader::fromString($resized_media)->toDestination('public', $file_preferences['images_folder'])->useFilename($media_filename . '-' . $key)->upload();
+                $model->attachMedia($m_resized_media, [$key]);
             }
         }
     }

@@ -39,7 +39,7 @@ class AuthController extends BaseController
             $data['password'] = Hash::make($data['password']);
             $user = User::create($data);
             
-            $this->store_media($user, isset($data['profile_image']) ? $data['profile_image'] : null, $user->name, $user->surname);
+            $this->store_media($user, isset($request->profile_image) ? $request->file('profile_image') : null, $user->name, $user->surname);
 
             $success['user'] = $user;
             $success['token'] =  $user->createToken('PageToken')->accessToken;
@@ -51,7 +51,6 @@ class AuthController extends BaseController
     }
 
     public function update(Request $request){
-        
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'surname' => 'required',
@@ -59,31 +58,31 @@ class AuthController extends BaseController
             'password' => 'required',
             'c_password' => 'required|same:password',
         ]);
-        
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 200);
-        }
             
-        $data = [];
-        foreach($request->all() as $key => $value){
-            if($key != 'email' && $key != 'active')
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors(), 200);
+            }
+            
+            $data = [];
+            foreach($request->all() as $key => $value){
+                if($key != 'email' && $key != 'active' && $key != 'password' && $key != 'c_password')
                 $data[$key] = $value;
-        }
-
-        $user = User::where('email', $request->email)->where('active', 1)->first();
-
-        if($user){
-            if($user && Hash::check($data['password'], $user->password)){
-                $data['password'] = Hash::make($data['password']);
-                $user->update($data);
-                $user->fresh();
-                
-                foreach($user->media as $media) $media->delete();
-                $this->store_media($user, isset($data['profile_image']) ? $data['profile_image'] : null, $user->name, $user->surname);
-    
-                $success['user'] = $user->fresh();
-    
-                return $this->sendResponse($success, "Updated succesfully.");
+            }
+            
+            $user = User::where('email', $request->email)->where('active', 1)->withMedia(['thumb'])->first();
+            
+            if($user){
+                if($user && Hash::check($request->password, $user->password)){
+                    if($request->profile_image) 
+                        foreach($user->media as $media) { $media->delete(); }
+                    // $user->fresh();
+                    $user->update($data);
+                    
+                    if($request->profile_image) $this->store_media($user, isset($request->profile_image) ? $request->file('profile_image') : null, $user->name, $user->surname);
+                    
+                    $success['user'] = User::where('email', $request->email)->where('active', 1)->withMedia(['thumb'])->first();
+                    
+                    return $this->sendResponse($success, "Updated succesfully.");
             } else {
                 return $this->sendError('Incorret User password.', [], 200);
             }
@@ -105,7 +104,7 @@ class AuthController extends BaseController
 
         if($data['email'] && $data['password']){
             
-            $user = User::where('email', $data['email'])->where('active', 1)->first();
+            $user = User::where('email', $data['email'])->where('active', 1)->withMedia(['thumb'])->first();
 
             if($user && Hash::check($data['password'], $user->password)){
                 $success['token'] = 'Bearer ' . $user->createToken('PageToken')->accessToken;
@@ -114,7 +113,7 @@ class AuthController extends BaseController
                 return $this->sendResponse($success, 'User logged successfully.');
             }
 
-            return $this->sendError('Error, wrong password or email.', [], 200);
+            return $this->sendError('Wrong data/Account not active.', [], 200);
         }
         return $this->sendError('Error, check the parameters.', [], 200);
     }

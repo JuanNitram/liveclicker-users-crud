@@ -26,7 +26,7 @@ const createStore = () => {
           this.$axios({url: process.env.apiUrl + 'login', data: user, method: 'POST' }).then(resp => {
             if(resp.data.success){
               const token = resp.data.data.token
-              const user = resp.data.data.user
+              const user = resp.data.data.admin
 
               localStorage.setItem('token', token)
               localStorage.setItem('user', JSON.stringify(user))

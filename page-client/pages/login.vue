@@ -1,4 +1,5 @@
 <template>
+<div>
   <v-layout row justify-center pt-5>
     <v-flex xs12 sm8 md6>
 
@@ -17,10 +18,32 @@
 
     </v-flex>
   </v-layout>
+
+  <v-layout row justify-center pt-5>
+    <v-flex xs12 sm8 md6>
+      <div class="text-xs-center">
+        <h2>Need an account? Sign up clicking <a href="" @click.prevent="showRegisterToggle">here!</a></h2>
+      </div>
+    </v-flex>
+  </v-layout>
+
+  <transition name="fade">
+    <v-layout v-show="showRegister" row justify-center>
+      <v-flex xs12 sm8 md6>
+        <register></register>
+      </v-flex>
+    </v-layout>
+  </transition>
+</div>
 </template>
 
 <script>
+import register from '../components/register'
+
 export default {
+    components: {
+      register
+    },
     data(){
       return {
         email: '',
@@ -29,43 +52,62 @@ export default {
         rules: {
             required: value => !!value || 'Required',
             min: pass => pass.length >= 8 || 'Min 8 characters',
-        }
+        },
+        showRegister: false,
       }
+    },
+    created(){
+      this.$nuxt.$on('disable-register-form', () => {
+        this.showRegister = false
+      })
+
+      this.$store.commit('SET_LOADING', false);
     },
     methods: {
       login: function () {
-          let isValid = this.$refs.form.validate();
-          if(isValid){
-              this.isLoading = true;
-              let email = this.email
-              let password = this.password
-              this.$store.dispatch('login', { email, password }).then((res) => {
-                  this.isLoading = false;
-                  if(res.data.success){
-                      this.$router.push('/')
-                  } else {
-                      // this.$toasted.show("Wrong email or password.", {
-                      //     theme: "bubble",
-                      //     type: 'error',
-                      //     fitToScreen: true,
-                      //     position: "top-right",
-                      //     duration : 3000
-                      // });
-                      console.log("ERROR");
-                  }
-                  this.loading = false;
-              }).catch(err => {
-                  this.loading = false;
-                  // this.$toasted.show("An error was ocurred.", {
-                  //     theme: "bubble",
-                  //     type: 'error',
-                  //     position: "top-right",
-                  //     duration : 3000
-                  // });
-              })
-          }
+        let isValid = this.$refs.form.validate();
+        if(isValid){
+            this.isLoading = true;
+            let email = this.email
+            let password = this.password
+            this.$store.dispatch('login', { email, password }).then((res) => {
+                this.isLoading = false;
+                if(res.data.success){
+                    this.$router.push('/')
+                } else {
+                  console.log("ERROR");
+                  this.$toast.show(res.data.message, {
+                    theme: "bubble",
+                    type: 'error',
+                    position: "top-right",
+                    duration : 5000
+                  });
+                }
+                this.loading = false;
+            }).catch(err => {
+                this.loading = false;
+                this.$toast.show("An error was ocurred.", {
+                  theme: "bubble",
+                  type: 'error',
+                  position: "top-right",
+                  duration : 5000
+              });
+            })
+        }
+      },
+      showRegisterToggle(e){
+        this.showRegister = !this.showRegister
       }
     }
 
 }
 </script>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .8s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>

@@ -19,14 +19,14 @@ class UsersController extends BaseController
 
     public function users(Request $request){
         if($request->email){
-            $user = User::where('email', $request->email)->withMedia([])->first();
+            $user = User::where('email', $request->email)->withMedia(['thumb'])->first();
             if($user){
                 $success['user'] = $user;
                 return $this->sendResponse($success, 'User');
             }
             return $this->sendError('No registered user.', [], 200);
         } else {
-            $users = User::all();
+            $users = User::withMedia(['thumb'])->get();
             if(count($users) > 0){
                 $success['users'] = $users;
                 return $this->sendResponse($success, 'Users');

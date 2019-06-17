@@ -43,9 +43,7 @@ export default {
     '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/toast',
   ],
-
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
@@ -78,6 +76,6 @@ export default {
     }
   },
   env: {
-    apiUrl: 'http://localhost/liveclicker-users-crud/api/public/api/page/'
+    apiUrl: 'http://localhost/liveclicker-users-crud/api/public/api/admin/'
   }
 }
