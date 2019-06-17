@@ -1,7 +1,5 @@
 <template>
-  <div v-show="!loading">
-    <dataTable :headers="headers"></dataTable>
-  </div>
+    <dataTable v-if="auth" :headers="headers"/>
 </template>
 
 <script>
@@ -14,7 +12,6 @@ import dataTable from '../components/dataTable'
       return {
         isLoading: false,
         headers: [
-            // { text: '', align: 'middle', value: 'check', sortable: false},
             { text: 'Id', align: 'left', value: 'id' , class:'clickable'},
             { text: '', align: 'middle', value: 'media', sortable: false},
             { text: 'Name', align:'left', value: 'name'  , class:'clickable'},
@@ -26,15 +23,17 @@ import dataTable from '../components/dataTable'
       }
     },
     mounted(){
-      const user = JSON.parse(localStorage.getItem("user"));
+      if(!this.auth){
+        this.$router.push('/login')
+      }
     },
     methods:{
       
     },
     computed: {
-      loading(){
-        return this.$store.getters.loading
-      },
+      auth(){
+        return this.$store.getters.auth
+      }
     }
   }
 </script>

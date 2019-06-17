@@ -28,6 +28,7 @@ Route::prefix('admin')->group(function(){
             Route::post('', 'Api\Admin\UsersController@save');
             Route::post('/{id}', 'Api\Admin\UsersController@update');
             Route::delete('/{id}', 'Api\Admin\UsersController@delete');
+            Route::put('/toggle/{id}', 'Api\Admin\UsersController@toggle');
         });
     });
 });

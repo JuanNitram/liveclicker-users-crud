@@ -38,7 +38,7 @@
 
                         <div v-else-if="header.value == 'actions'" class="actions">
                             <v-tooltip bottom>
-                                <v-btn  color="primary" dark small icon flat slot="activator" @click="activeItem(props.item)">
+                                <v-btn  color="primary" dark small icon flat slot="activator" @click="activeItem(props.item.id)">
                                     <v-icon small >
                                         done
                                     </v-icon>
@@ -46,7 +46,7 @@
                                 Active this
                             </v-tooltip>
                             <v-tooltip bottom>
-                                <v-btn  color="primary" dark small icon flat slot="activator" @click="desactiveItem(props.item)">
+                                <v-btn  color="primary" dark small icon flat slot="activator" @click="desactiveItem(props.item.id)">
                                     <v-icon small >
                                         close
                                     </v-icon>
@@ -54,7 +54,7 @@
                                 Desactive this
                             </v-tooltip>
                             <v-tooltip bottom>
-                                <v-btn  color="primary" dark small icon flat slot="activator" @click="removeItem(props.item)">
+                                <v-btn  color="primary" dark small icon flat slot="activator" @click="removeItem(props.item.id)">
                                     <v-icon small >
                                         delete
                                     </v-icon>
@@ -78,6 +78,8 @@
 </template>
 
 <script>
+    const Cookie = require('js-cookie')
+
     export default {
         props: {
             headers: Array,
@@ -89,34 +91,63 @@
             }
         },
         created(){
-            this.$store.commit('SET_LOADING', true);
-
-            this.$axios.get(process.env.apiUrl + 'users').then((response) => {
+            this.$axios.get(process.env.apiUrl + 'users',{ headers: { 'Authorization': this.auth.token }}).then((response) => {
                 let res = response.data;
                 if(res.success){
                     this.items = res.data['users'];
                 }
-                this.$store.commit('SET_LOADING', false);
+            }).catch(err => {
+                if(err.response.status == 401){
+                    Cookie.remove('auth')
+                    this.$store.commit('SET_AUTH', null)
+                    this.$router.push('/login')
+                }
+
             });
         },
         methods: {
-            activeItem(item){
-                this.$router.push(this.section + '/edit/' + item.id)
+            activeItem(id){
+                this.$axios.put(process.env.apiUrl + 'users/toggle/' + id,{
+                    toggle: 1
+                },{ headers: { 'Authorization': this.auth.token }}).then((response) => {
+                    let res = response.data;
+                    if(res.success){
+                        this.items.forEach((item) => {
+                            if(item.id == id){
+                                item.active = 1
+                            }
+                            
+                        })
+                    }
+                });
             },
-            desactiveItem(item){
-                this.$router.push(this.section + '/edit/' + item.id)
+            desactiveItem(id){
+                this.$axios.put(process.env.apiUrl + 'users/toggle/' + id,{
+                    toggle: 0
+                },{ headers: { 'Authorization': this.auth.token }}).then((response) => {
+                    let res = response.data;
+                    if(res.success){
+                        this.items.forEach((item) => {
+                            if(item.id == id){
+                                item.active = 0
+                            }
+                            
+                        })
+                    }
+                });
             },
-            removeItem(item){
-                this.$http.post(this.url + '/remove/' + item.id).then((response) => {
+            removeItem(id){
+                this.$axios.delete(process.env.apiUrl + 'users/' + id,{ 
+                    headers: { 'Authorization': this.auth.token }
+                }).then((response) => {
                     let res = response.data;
                     let removed = false;
                     for(let i = 0; i < this.items.length && !removed; i++){
-                        if(this.items[i].id == item.id){
+                        if(this.items[i].id == id){
                             removed = true;
                             this.items.splice(i, 1);
                         }
                     }
-                    this.$store.commit('SET_LOADING', false);
                 });
             },
             headerLeft(header){
@@ -125,6 +156,11 @@
                 return ''
             },
         },
+        computed:{
+          auth(){
+            return this.$store.getters.auth
+          }
+        }
     }
 
 </script>

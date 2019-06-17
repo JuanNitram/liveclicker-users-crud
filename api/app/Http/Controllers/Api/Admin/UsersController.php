@@ -36,12 +36,40 @@ class UsersController extends BaseController
     }
 
     public function delete($id){
-        $user = User::where('id', $id)->first();
-        if($user){
-            $user->delete();
-            return $this->sendResponse([], 'User deleted successfully.');
+        if($id){
+            $user = User::where('id', $id)->first();
+            if($user){
+                foreach($user->media as $media)
+                    $media->delete();
+                    
+                $user->delete();
+                return $this->sendResponse([], 'User deleted successfully.');
+            }
+            return $this->sendError('User not found.', [], 200);
         }
-        return $this->sendError('User not found.', [], 200);
+        return $this->sendError('No id param!', [], 200);
+    }
+
+    public function toggle($id, Request $request){
+        if($id){
+            $validator = Validator::make($request->all(), [
+                'toggle' => 'required',
+            ]);
+
+            if($validator->fails())
+                return $this->sendError('Validation Error.', $validator->errors(), 200);
+                
+            $user = User::where('id', $request->id)->first();
+            if($user){
+                $user->update(['active' => $request->toggle]);
+
+                $success['user'] = $user->fresh();
+                return $this->sendResponse($success, 'User updated successfully.');
+            }
+            
+            return $this->sendError('User not found!', [], 200);
+        }
+        return $this->sendError('No id param!', [], 200);
     }
 
     public function save(Request $request){

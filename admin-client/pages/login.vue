@@ -20,6 +20,8 @@
 </template>
 
 <script>
+const Cookie = require('js-cookie')
+
 export default {
     data(){
       return {
@@ -32,9 +34,6 @@ export default {
         }
       }
     },
-    created(){
-      this.$store.commit('SET_LOADING', false);
-    },
     methods: {
       login: function () {
           let isValid = this.$refs.form.validate();
@@ -42,16 +41,21 @@ export default {
               this.isLoading = true;
               let email = this.email
               let password = this.password
-              this.$store.dispatch('login', { email, password }).then((res) => {
-                  this.isLoading = false;
-                  if(res.data.success){
-                      this.$router.push('/')
-                  } else {
-                      console.log("ERROR");
-                  }
-                  this.loading = false;
+              this.$axios.post(process.env.apiUrl + 'login', {
+                email, 
+                password 
+              }).then((res) => {
+                if(res.data.success){
+                    let auth = res.data.data
+                    this.$store.commit('SET_AUTH', auth);
+                    Cookie.set('auth', auth);
+                } else {
+                  console.log("ERROR");
+                }
+                this.$router.push('/')
+                this.loading = false;
               }).catch(err => {
-                  this.loading = false;
+                this.loading = false;
               })
           }
       }
