@@ -47,6 +47,7 @@ export default {
     '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/toast',
   ],
   /*
   ** Axios module configuration

@@ -119,6 +119,19 @@
                             
                         })
                     }
+                    this.$toast.show(res.message, {
+                        theme: "bubble",
+                        type: 'success',
+                        position: "top-right",
+                        duration : 5000
+                    });
+                }).catch(err => {
+                    this.$toast.show("An error was ocurred", {
+                        theme: "bubble",
+                        type: 'error',
+                        position: "top-right",
+                        duration : 5000
+                    });
                 });
             },
             desactiveItem(id){
@@ -134,6 +147,19 @@
                             
                         })
                     }
+                    this.$toast.show(res.message, {
+                        theme: "bubble",
+                        type: 'success',
+                        position: "top-right",
+                        duration : 5000
+                    });
+                }).catch(err => {
+                    this.$toast.show("An error was ocurred", {
+                        theme: "bubble",
+                        type: 'error',
+                        position: "top-right",
+                        duration : 5000
+                    });
                 });
             },
             removeItem(id){
@@ -148,7 +174,20 @@
                             this.items.splice(i, 1);
                         }
                     }
-                });
+                    this.$toast.show(res.message, {
+                        theme: "bubble",
+                        type: 'success',
+                        position: "top-right",
+                        duration : 5000
+                    });
+                }).catch(err => {
+                    this.$toast.show("An error was ocurred", {
+                        theme: "bubble",
+                        type: 'error',
+                        position: "top-right",
+                        duration : 5000
+                    });
+                });;
             },
             headerLeft(header){
                 if(header.value == 'id')

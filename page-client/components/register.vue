@@ -19,8 +19,8 @@
       <v-text-field class="text-field-pad" v-model="name" :rules="[rules.required]" label="Name" required outline></v-text-field>
       <v-text-field class="text-field-pad" v-model="surname" :rules="[rules.required]" label="Surname" required outline></v-text-field>
       <v-text-field class="text-field-pad" v-model="email" :rules="[rules.required]" label="E-mail" required outline></v-text-field>
-      <v-text-field class="text-field-pad" v-model="password" :rules="[rules.required, rules.min]" label="Password" required outline></v-text-field>
-      <v-text-field class="text-field-pad" v-model="c_password" :rules="[rules.required, rules.min]" label="Confirm Password" required outline></v-text-field>
+      <v-text-field class="text-field-pad" v-model="password" :rules="[rules.required, rules.min]" label="Password" type="password" required outline></v-text-field>
+      <v-text-field class="text-field-pad" v-model="c_password" :rules="[rules.required, rules.min]" label="Confirm Password" type="password" required outline></v-text-field>
 
     <div class="text-xs-right">
         <v-btn depressed large @click="signUp">
