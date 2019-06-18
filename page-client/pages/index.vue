@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!loading">
+  <div v-show="auth">
     <v-layout justify-center align-center>
       <v-flex xs12 sm8 md6 pt-5>
           <v-form ref="form" lazy-validation>
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+  const Cookie = require('js-cookie')
+
   export default {
     data(){
       return {
@@ -67,12 +69,15 @@
       }
     },
     mounted(){
-      const user = JSON.parse(localStorage.getItem("user"));
-      if(user){
-        this.name = user.name
-        this.surname = user.surname
-        this.email = user.email
-        this.imgUrl = user.media[0] ? user.media[0].full_url : ''
+      if(!this.auth){
+        this.$router.push('/login')
+      }
+
+      if(this.auth.user){
+        this.name = this.auth.user.name
+        this.surname = this.auth.user.surname
+        this.email = this.auth.user.email
+        this.imgUrl = this.auth.user.media[0] ? this.auth.user.media[0].full_url : ''
       }
     },
     methods:{
@@ -92,15 +97,39 @@
 
               this.$axios.post(process.env.apiUrl + 'update', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': this.auth.token
                 }
               }).then((res) => {
+                if(res.data.success){
                   const user = res.data.data.user
-                  localStorage.setItem('user', JSON.stringify(user))
+                  this.$store.commit('SET_USER', user)
+                  Cookie.remove('auth')
+                  Cookie.set('auth', {token:this.auth.token, user:user})
                   this.imgUrl = user.media[0].full_url
-                  this.isLoading = false;
+                  this.$toast.show(res.data.message, {
+                    theme: "bubble",
+                    type: 'success',
+                    position: "top-right",
+                    duration : 5000
+                  });
+                } else {
+                  this.$toast.show(res.data.message, {
+                    theme: "bubble",
+                    type: 'error',
+                    position: "top-right",
+                    duration : 5000
+                  });
+                }
+                this.isLoading = false;
               }).catch(err => {
                   console.log(err)
+                  this.$toast.show('An error was ocurred', {
+                    theme: "bubble",
+                    type: 'error',
+                    position: "top-right",
+                    duration : 5000
+                  });
                   this.isLoading = false;
               })
           }
@@ -114,6 +143,9 @@
       loading(){
         return this.$store.getters.loading
       },
+      auth(){
+        return this.$store.getters.auth
+      }
     }
   }
 </script>

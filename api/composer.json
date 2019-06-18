@@ -14,7 +14,6 @@
         "laravel/tinker": "^1.0",
         "plank/laravel-mediable": "^2.8",
         "smartins/passport-multiauth": "^4.0",
-        "spatie/laravel-analytics": "^3.7"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

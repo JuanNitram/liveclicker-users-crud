@@ -49,10 +49,10 @@ export default {
                     let auth = res.data.data
                     this.$store.commit('SET_AUTH', auth);
                     Cookie.set('auth', auth);
+                    this.$router.push('/')
                 } else {
                   console.log("ERROR");
                 }
-                this.$router.push('/')
                 this.loading = false;
               }).catch(err => {
                 this.loading = false;

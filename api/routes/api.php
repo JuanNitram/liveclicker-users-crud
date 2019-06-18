@@ -11,6 +11,7 @@ Route::prefix('page')->group(function(){
     Route::middleware('auth:user')->group(function(){
         Route::get('check', 'Api\Page\AuthController@check');
         Route::post('update', 'Api\Page\AuthController@update');
+        Route::post('delete/{id}', 'Api\Page\AuthController@delete');
     });
 
     Route::post('send', 'Api\Page\ContactController@send');

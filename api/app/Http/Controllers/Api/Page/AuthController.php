@@ -118,6 +118,31 @@ class AuthController extends BaseController
         return $this->sendError('Error, check the parameters.', [], 200);
     }
 
+    public function delete($id, Request $request){
+        $data = $request->all();
+
+        $validator = Validator::make($data, [
+            'password' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 200);
+        }
+
+        if($id){
+            $user = User::where('id', $id)->first();
+            if($user && Hash::check($data['password'], $user->password)){
+                foreach($user->media as $media)
+                    $media->delete();
+                    
+                $user->delete();
+                return $this->sendResponse([], 'User deleted successfully.');
+            }
+            return $this->sendError('User not found or wrong password.', [], 200);
+        }
+        return $this->sendError('No id param!', [], 200);
+    }
+
     public function check(){
         return $this->sendResponse([], 'The token is valid!');
     }

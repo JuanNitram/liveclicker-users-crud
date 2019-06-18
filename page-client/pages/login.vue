@@ -6,7 +6,7 @@
       <v-form ref="form" lazy-validation>
         <v-text-field v-model="email" :rules="[rules.required]" label="E-mail" required outline></v-text-field>
 
-        <v-text-field v-model="password" :counter="10" :rules="[rules.required, rules.min]" label="Password" type="password" required outline></v-text-field>
+        <v-text-field v-model="password" :rules="[rules.required, rules.min]" label="Password" type="password" required outline></v-text-field>
 
         <div class="text-xs-right">
             <v-btn depressed large @click="login">
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+const Cookie = require('js-cookie')
+
 import register from '../components/register'
 
 export default {
@@ -70,12 +72,17 @@ export default {
             this.isLoading = true;
             let email = this.email
             let password = this.password
-            this.$store.dispatch('login', { email, password }).then((res) => {
+            this.$axios.post(process.env.apiUrl + 'login', {
+              email,
+              password
+            }).then((res) => {
                 this.isLoading = false;
                 if(res.data.success){
-                    this.$router.push('/')
+                  let auth = res.data.data
+                  this.$store.commit('SET_AUTH', auth)
+                  Cookie.set('auth', auth)
+                  this.$router.push('/')
                 } else {
-                  console.log("ERROR");
                   this.$toast.show(res.data.message, {
                     theme: "bubble",
                     type: 'error',

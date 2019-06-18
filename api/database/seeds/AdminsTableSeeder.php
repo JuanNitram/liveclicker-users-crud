@@ -16,7 +16,7 @@ class AdminsTableSeeder extends Seeder
            [
             'name' => 'Support',
             'email' => 'support@liveclicker.com',
-            'password' => '$2y$10$HK3oTqZJ8Uot.v7mHViA.OwBNuAFYwgw4/0pfEkmvUFlM7q38fZMy', //elbergalarga xD
+            'password' => '$2y$10$F.dwf8nhsNK2026p8zinROx5ydwpf1fo4GKrRN5s1ow2GFtfs/qbW', //zapallo2019
             'active' => 1,
             'remember_token' => NULL,
             'created_at' => '2019-12-04 18:02:57',
