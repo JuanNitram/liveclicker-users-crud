@@ -12,7 +12,9 @@ You have to execute the nexts instructions after clone the project. Make sure yo
 
 5. ```php artisan passport:install```
 
-6. ```sudo chmod -R 777 storage``` (Only on linux systems)
+6. ```rm public/storage``` and ```php artisan storage:link```
+
+7. ```sudo chmod -R 777 storage``` (Only on linux systems)
 
 ## Page - Client
 
